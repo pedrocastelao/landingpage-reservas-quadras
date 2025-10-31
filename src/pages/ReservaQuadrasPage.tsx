@@ -17,7 +17,7 @@ const ReservaQuadrasPage = () => {
     status: "idle",
   });
   // A lógica de negócio principal fica aqui
-  const isReservasAbertas = new Date().getDay() === 3; // 1 = Segunda-feira
+  const isReservasAbertas = new Date().getDay() === 5; // 1 = Segunda-feira
 
   // Função que lida com o sucesso da submissão
   const handleSuccess = () => {
