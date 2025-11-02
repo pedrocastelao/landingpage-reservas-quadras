@@ -1,11 +1,14 @@
 // src/components/AvisoDisponibilidade.tsx
 import { CheckCircle, AlertCircle } from "lucide-react";
 
+// 1. Atualizamos as props para receber o título e a mensagem
 interface AvisoProps {
   isAberto: boolean;
+  titulo: string;
+  mensagem: string;
 }
 
-const AvisoDisponibilidade = ({ isAberto }: AvisoProps) => (
+const AvisoDisponibilidade = ({ isAberto, titulo, mensagem }: AvisoProps) => (
   <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div
       className={`rounded-xl p-6 flex items-center space-x-4 ${
@@ -31,12 +34,12 @@ const AvisoDisponibilidade = ({ isAberto }: AvisoProps) => (
             isAberto ? "text-green-800" : "text-orange-800"
           }`}
         >
-          {isAberto ? "Reservas Disponíveis!" : "Reservas Indisponíveis"}
+          {/* 2. Usamos a prop 'titulo' */}
+          {titulo}
         </h3>
         <p className={`${isAberto ? "text-green-700" : "text-orange-700"}`}>
-          {isAberto
-            ? "Hoje é segunda-feira! Você pode fazer sua reserva."
-            : "As reservas só podem ser feitas às segundas-feiras. Volte na próxima segunda!"}
+          {/* 3. Usamos a prop 'mensagem' */}
+          {mensagem}
         </p>
       </div>
     </div>

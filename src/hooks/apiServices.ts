@@ -33,3 +33,8 @@ export const quadrasService = {
   // Tipando o retorno para garantir que recebemos um array de Quadras
   getQuadras: () => api.get<Quadra[]>(`/quadras`),
 };
+
+export const configuracoesService = {
+  getDiaReserva: () =>
+    api.get<{ valor: number; regra: string }>(`config/dia-reserva`),
+};
