@@ -12,6 +12,7 @@ export interface FormData {
   quadraId: string;
   dataInicio: string;
   dataFim: string;
+  origem: string;
 }
 
 interface FormState {
@@ -158,7 +159,14 @@ export const useReservaForm = ({ onSuccess, onError }: UseReservaFormProps) => {
         .toLocaleString("sv-SE", { timeZone: "America/Sao_Paulo" })
         .slice(0, 16);
 
-      const payload: FormData = { nome, cpf, quadraId, dataInicio, dataFim };
+      const payload: FormData = {
+        nome,
+        cpf,
+        quadraId,
+        dataInicio,
+        dataFim,
+        origem: "LandingPage",
+      };
 
       await reservaService.createReserva(payload);
       onSuccess();

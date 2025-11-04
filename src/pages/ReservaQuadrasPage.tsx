@@ -6,6 +6,7 @@ import AvisoDisponibilidade from "../components/AvisoDisponibilidade";
 import FormularioReserva from "../components/FormularioReserva";
 import TelaResultado from "../components/TelaResultado";
 import { configuracoesService } from "../hooks/apiServices";
+import MinhasReservasModal from "../components/MinhasReservasModal";
 
 type SubmissionStatus = {
   status: "idle" | "success" | "error";
@@ -13,7 +14,7 @@ type SubmissionStatus = {
 };
 // Interface para o estado da nossa configuração
 interface ConfigReserva {
-  diaNumero: number;
+  diaNumero: string;
   diaNome: string;
 }
 
@@ -22,6 +23,8 @@ const ReservaQuadrasPage = () => {
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>({
     status: "idle",
   });
+
+  const [isModalReservasAberto, setIsModalReservasAberto] = useState(false);
 
   const [configuracaoReserva, setConfiguracaoReserva] =
     useState<ConfigReserva | null>(null);
@@ -33,13 +36,30 @@ const ReservaQuadrasPage = () => {
     const fetchConfig = async () => {
       try {
         setIsLoading(true);
-        // O endpoint pode ser o que você já usa (ex: /configuracao-ativa)
+
         const response = await configuracoesService.getDiaReserva();
 
+        // 'response.data' é o ARRAY com 3 configs: [HORARIO_FIM, Terça-feira, HORARIO_INICIO]
+
+        // 1. Usamos .find() para achar a regra que NÃO é de horário
+        const configDoDia = response.data.find(
+          (config) =>
+            config.regra !== "HORARIO_INICIO" && config.regra !== "HORARIO_FIM"
+        );
+
+        // 2. Verificamos se ele realmente encontrou
+        if (!configDoDia) {
+          throw new Error(
+            "Não foi possível encontrar a regra do dia (ex: Terça-feira) nas configurações."
+          );
+        }
+
+        // 3. Usamos o 'configDoDia' (que agora é o objeto da Terça-feira)
         setConfiguracaoReserva({
-          diaNumero: response.data.valor, // Ex: 5
-          diaNome: response.data.regra, // Ex: "Sexta - Feira"
+          diaNumero: configDoDia.valor, // Ex: "2"
+          diaNome: configDoDia.regra, // Ex: "Terça-feira"
         });
+
         setError(null);
       } catch (err) {
         console.error("Erro ao buscar configuração da API:", err);
@@ -77,7 +97,7 @@ const ReservaQuadrasPage = () => {
   const { diaNumero, diaNome } = configuracaoReserva;
 
   const hoje: number = new Date().getDay();
-  const isReservasAbertas: boolean = hoje === diaNumero;
+  const isReservasAbertas: boolean = hoje === parseInt(diaNumero, 10);
 
   const tituloAviso = isReservasAbertas
     ? "Reservas Disponíveis!"
@@ -133,7 +153,16 @@ const ReservaQuadrasPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-indigo-100">
       <Header />
       <main>
-        {/* Nenhuma mudança aqui, 'AvisoDisponibilidade' já funciona com essas props */}
+        {/* 3. ADICIONAR O BOTÃO (ex: logo abaixo do AvisoDisponibilidade) */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-right -mt-4 mb-4">
+          <button
+            onClick={() => setIsModalReservasAberto(true)}
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Consultar Minhas Reservas
+          </button>
+        </div>
+
         <AvisoDisponibilidade
           isAberto={isReservasAbertas}
           titulo={tituloAviso}
@@ -146,6 +175,11 @@ const ReservaQuadrasPage = () => {
         />
       </main>
       <Footer />
+
+      {/* 4. RENDERIZAR O MODAL (fora do <main>, no fim do <div> principal) */}
+      {isModalReservasAberto && (
+        <MinhasReservasModal onClose={() => setIsModalReservasAberto(false)} />
+      )}
     </div>
   );
 };

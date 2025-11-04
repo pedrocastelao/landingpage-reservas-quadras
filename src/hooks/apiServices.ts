@@ -27,6 +27,8 @@ export const reservaService = {
 
   getHorariosDisponiveis: (data: string, quadraId: string) =>
     api.get<string[]>(`/reserva/horarios/${quadraId}/${data}`), // Tipando o retorno
+
+  getReservaCpf: (cpf: string) => api.get(`/reservas/cpf/${cpf}`),
 };
 
 export const quadrasService = {
@@ -36,5 +38,5 @@ export const quadrasService = {
 
 export const configuracoesService = {
   getDiaReserva: () =>
-    api.get<{ valor: number; regra: string }>(`config/dia-reserva`),
+    api.get<{ valor: string; regra: string }[]>(`/configuracoes`),
 };
