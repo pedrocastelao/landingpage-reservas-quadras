@@ -116,7 +116,7 @@ const maxDateformatado = formatarDataParaInput(maxDate);
                <input
                   type="date"
                   name="data"
-                  value={formState.data}
+                  value={formState.data ? formatarDataParaInput(formState.data) : ""}
                   onChange={handleInputChange} 
                   min={minDateformatado} // <-- CORRIGIDO
                   max={maxDateformatado} // <-- CORRIGIDO
