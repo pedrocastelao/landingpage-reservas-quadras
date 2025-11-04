@@ -29,6 +29,22 @@ const FormularioReserva = ({
     // REMOVIDO: updateField, fetchHorarios
   } = useReservaForm({ onSuccess, onError });
 
+  const formatarDataParaInput = (data: Date | string): string => {
+  // Converte para objeto Date se for uma string (ex: de uma API)
+  const dateObj = new Date(data);
+
+  // Pega os componentes da data no fuso horário LOCAL
+  const year = dateObj.getFullYear();
+  // getMonth() é base 0 (Jan=0), então somamos 1
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
+  const day = String(dateObj.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+const minDateformatado = formatarDataParaInput(minDate);
+const maxDateformatado = formatarDataParaInput(maxDate);
+
   // REMOVIDO: A função handleInputChange local foi totalmente removida.
   // A lógica de buscar horários agora é responsabilidade 100% do hook.
 
@@ -97,13 +113,13 @@ const FormularioReserva = ({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Data *
                 </label>
-                <input
+               <input
                   type="date"
                   name="data"
                   value={formState.data}
-                  onChange={handleInputChange} // Usa o handler direto do hook
-                  min={minDate} // ALTERADO: Usa a data mínima calculada pelo hook
-                  max={maxDate} // ALTERADO: Usa a data máxima calculada pelo hook
+                  onChange={handleInputChange} 
+                  min={minDateformatado} // <-- CORRIGIDO
+                  max={maxDateformatado} // <-- CORRIGIDO
                   className="w-full px-4 py-3 border rounded-xl border-gray-300"
                   disabled={!isAberto}
                 />
