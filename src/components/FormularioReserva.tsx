@@ -30,18 +30,30 @@ const FormularioReserva = ({
   } = useReservaForm({ onSuccess, onError });
 
   const formatarDataParaInput = (data: Date | string): string => {
-  // Converte para objeto Date se for uma string (ex: de uma API)
-  const dateObj = new Date(data);
+    let dateObj: Date;
 
-  // Pega os componentes da data no fuso horário LOCAL
-  const year = dateObj.getFullYear();
-  // getMonth() é base 0 (Jan=0), então somamos 1
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
-  const day = String(dateObj.getDate()).padStart(2, '0');
+    // Checagem de segurança
+    if (!data) return "";
 
-  return `${year}-${month}-${day}`;
-};
+    // Se for uma string 'YYYY-MM-DD', precisamos desmontá-la
+    // para evitar o bug do fuso horário UTC.
+    if (typeof data === "string" && data.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = data.split("-").map(Number);
+      // new Date(ano, mes-1, dia) FORÇA o fuso horário local
+      dateObj = new Date(year, month - 1, day);
+    } else {
+      // Se for um objeto Date ou outra string, deixe o construtor padrão
+      dateObj = new Date(data);
+    }
 
+    // O resto da sua lógica estava certa, mas agora usa um 'dateObj' correto
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+  
 const minDateformatado = formatarDataParaInput(minDate);
 const maxDateformatado = formatarDataParaInput(maxDate);
 
