@@ -45,9 +45,16 @@ const FormularioReserva = ({
 const minDateformatado = formatarDataParaInput(minDate);
 const maxDateformatado = formatarDataParaInput(maxDate);
 
-  // REMOVIDO: A função handleInputChange local foi totalmente removida.
-  // A lógica de buscar horários agora é responsabilidade 100% do hook.
-
+  // ================================================================
+  // ✨ ADICIONE ESTE CONSOLE.LOG PARA DEPURAR ✨
+  // ================================================================
+  console.log("DEPURAÇÃO DATA iOS:");
+  console.log("Min Original:", minDate);
+  console.log("Min Formatado:", minDateformatado);
+  console.log("Max Original:", maxDate);
+  console.log("Max Formatado:", maxDateformatado);
+  console.log("Valor do Input (formState.data):", formState.data);
+  // ================================================================
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
       <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
