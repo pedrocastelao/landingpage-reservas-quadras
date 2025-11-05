@@ -3,6 +3,9 @@
 import { Calendar, User, CheckCircle } from "lucide-react";
 import { useReservaForm } from "../hooks/useReservaForm";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 // ALTERADO: Adicionamos o callback onError para passar ao hook
 interface FormularioProps {
   isAberto: boolean;
@@ -29,33 +32,45 @@ const FormularioReserva = ({
     // REMOVIDO: updateField, fetchHorarios
   } = useReservaForm({ onSuccess, onError });
 
-  const formatarDataParaInput = (data: Date | string): string => {
-    let dateObj: Date;
+  const handleDateChange = (date: Date | null) => {
+    let dataFormatada = "";
 
-    // Checagem de segurança
-    if (!data) return "";
-
-    // Se for uma string 'YYYY-MM-DD', precisamos desmontá-la
-    // para evitar o bug do fuso horário UTC.
-    if (typeof data === "string" && data.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      const [year, month, day] = data.split("-").map(Number);
-      // new Date(ano, mes-1, dia) FORÇA o fuso horário local
-      dateObj = new Date(year, month - 1, day);
-    } else {
-      // Se for um objeto Date ou outra string, deixe o construtor padrão
-      dateObj = new Date(data);
+    if (date) {
+      // Formata a data para YYYY-MM-DD (o formato que seu hook já usa)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      dataFormatada = `${year}-${month}-${day}`;
     }
 
-    // O resto da sua lógica estava certa, mas agora usa um 'dateObj' correto
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
+    // Simula o objeto 'event' que o seu hook 'handleInputChange' espera
+    const eventoSimulado = {
+      target: {
+        name: "data", // O nome do campo
+        value: dataFormatada, // O valor formatado
+      },
+    };
 
-    return `${year}-${month}-${day}`;
+    // Chama o handler original do seu hook
+    handleInputChange(
+      eventoSimulado as unknown as React.ChangeEvent<HTMLInputElement>
+    );
   };
 
-  const minDateformatado = formatarDataParaInput(minDate);
-  const maxDateformatado = formatarDataParaInput(maxDate);
+  // --- Funções Helper para converter as strings min/max em Date ---
+  // (Usando a lógica de split para evitar o bug do fuso que tínhamos antes)
+  const parseDateString = (dateString: string): Date | null => {
+    if (!dateString) return null;
+    // Evita o bug do fuso tratando a string 'YYYY-MM-DD'
+    const [year, month, day] = dateString.split("-").map(Number);
+    if (!year || !month || !day) return null;
+    return new Date(year, month - 1, day);
+  };
+
+  const minDateObj = parseDateString(minDate);
+  const maxDateObj = parseDateString(maxDate);
+  // Converte o valor atual do formulário (que é string) de volta para Date
+  const selectedDateObj = parseDateString(formState.data);
 
   // ================================================================
   // ✨ ADICIONE ESTE CONSOLE.LOG PARA DEPURAR ✨
@@ -132,17 +147,16 @@ const FormularioReserva = ({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Data *
                 </label>
-                <input
-                  type="date"
-                  name="data"
-                  value={
-                    formState.data ? formatarDataParaInput(formState.data) : ""
-                  }
-                  onChange={handleInputChange}
-                  min={minDateformatado} // <-- CORRIGIDO
-                  max={maxDateformatado} // <-- CORRIGIDO
-                  className="w-full px-4 py-3 border rounded-xl border-gray-300"
+                <DatePicker
+                  selected={selectedDateObj} // O valor (tem que ser Date ou null)
+                  onChange={handleDateChange} // Nosso handler novo
+                  minDate={minDateObj || undefined} // <-- CORRIGIDO AQUI
+                  maxDate={maxDateObj || undefined} // <-- CORRIGIDO AQUI
                   disabled={!isAberto}
+                  className="w-full px-4 py-3 border rounded-xl border-gray-300" // Seus estilos
+                  placeholderText="Selecione a data" // Texto de ajuda
+                  dateFormat="dd/MM/yyyy" // Formato de exibição amigável
+                  autoComplete="off"
                 />
               </div>
 
