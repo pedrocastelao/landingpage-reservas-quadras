@@ -53,19 +53,19 @@ const FormularioReserva = ({
 
     return `${year}-${month}-${day}`;
   };
-  
-const minDateformatado = formatarDataParaInput(minDate);
-const maxDateformatado = formatarDataParaInput(maxDate);
+
+  const minDateformatado = formatarDataParaInput(minDate);
+  const maxDateformatado = formatarDataParaInput(maxDate);
 
   // ================================================================
   // ✨ ADICIONE ESTE CONSOLE.LOG PARA DEPURAR ✨
   // ================================================================
-  console.log("DEPURAÇÃO DATA iOS:");
-  console.log("Min Original:", minDate);
-  console.log("Min Formatado:", minDateformatado);
-  console.log("Max Original:", maxDate);
-  console.log("Max Formatado:", maxDateformatado);
-  console.log("Valor do Input (formState.data):", formState.data);
+  // console.log("DEPURAÇÃO DATA iOS:");
+  // console.log("Min Original:", minDate);
+  // console.log("Min Formatado:", minDateformatado);
+  // console.log("Max Original:", maxDate);
+  // console.log("Max Formatado:", maxDateformatado);
+  // console.log("Valor do Input (formState.data):", formState.data);
   // ================================================================
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -132,11 +132,13 @@ const maxDateformatado = formatarDataParaInput(maxDate);
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Data *
                 </label>
-               <input
+                <input
                   type="date"
                   name="data"
-                  value={formState.data ? formatarDataParaInput(formState.data) : ""}
-                  onChange={handleInputChange} 
+                  value={
+                    formState.data ? formatarDataParaInput(formState.data) : ""
+                  }
+                  onChange={handleInputChange}
                   min={minDateformatado} // <-- CORRIGIDO
                   max={maxDateformatado} // <-- CORRIGIDO
                   className="w-full px-4 py-3 border rounded-xl border-gray-300"

@@ -1,5 +1,6 @@
 // src/pages/ReservaQuadrasPage.tsx
 import { useState, useEffect } from "react";
+import { ClipboardList } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AvisoDisponibilidade from "../components/AvisoDisponibilidade";
@@ -154,12 +155,19 @@ const ReservaQuadrasPage = () => {
       <Header />
       <main>
         {/* 3. ADICIONAR O BOTÃO (ex: logo abaixo do AvisoDisponibilidade) */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-right -mt-4 mb-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end mb-4">
           <button
             onClick={() => setIsModalReservasAberto(true)}
-            className="text-blue-600 font-medium hover:underline"
+            className="
+                      inline-flex items-center gap-2 px-4 py-2           
+                      border border-blue-600 text-blue-600 font-semibold 
+                      rounded-lg shadow-sm 
+                      hover:bg-blue-50 
+                      transition-colors 
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Consultar Minhas Reservas
+            <ClipboardList className="w-5 h-5" />
+            Consultar Minhas Reservas (ATIVAS)
           </button>
         </div>
 

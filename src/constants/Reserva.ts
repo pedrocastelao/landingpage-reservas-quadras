@@ -1,8 +1,14 @@
 export interface Reserva {
   id: string;
-  nomeCliente: string;
-  data: string; // Ex: "2025-11-10T14:00:00.000Z"
-  quadra: string; // Ex: "Quadra 1"
-  status: string; // Ex: "Confirmada"
-  // Adicione outros campos que sua API retornar
+  nome: string; // <-- MUDOU DE nomeCliente
+  dataInicio: string; // <-- MUDOU DE data
+  dataFim: string; // <-- NOVO CAMPO
+  status: number; // <-- MUDOU DE string
+  Quadra: {
+    // <-- MUDOU DE quadra: string
+    tipo: string;
+    localizacao: string;
+    preco: string;
+  };
+  // Adicione outros campos se precisar
 }
