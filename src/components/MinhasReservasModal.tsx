@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 // 1. Importei o QrCode para o comprovante
-import { X, QrCode } from "lucide-react";
+import { X, QrCode, Clock, Check, XCircle, AlertTriangle } from "lucide-react";
 import { reservaService } from "../hooks/apiServices";
 import type { Reserva } from "../constants/Reserva";
 
@@ -59,8 +59,10 @@ const MinhasReservasModal = ({ onClose }: ModalProps) => {
     }
   };
 
-  const formatarData = (dataISO: string) => {
-    return new Date(dataISO).toLocaleDateString("pt-BR", {
+  // --- FUNÇÕES DE DATA ATUALIZADAS ---
+  // 1. Formata a data e hora completas (para o comprovante)
+  const formatarDataHora = (dataISO: string) => {
+    return new Date(dataISO).toLocaleString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -69,13 +71,57 @@ const MinhasReservasModal = ({ onClose }: ModalProps) => {
     });
   };
 
-  // 3. LÓGICA DE FILTRO (NOVA)
-  // Filtra as reservas para mostrar APENAS as ativas.
-  const reservasAtivas = reservas?.filter((r) => r.status === 1) || [];
+  // 2. Formata apenas a data (para as listas de resumo)
+  const formatarDataResumo = (dataISO: string) => {
+    return new Date(dataISO).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  // 3. Formata apenas a hora final
+  const formatarHora = (dataISO: string) => {
+    return new Date(dataISO).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // --- LÓGICA DE FILTRO ATUALIZADA ---
+  // Como você disse, só pode haver UMA ativa, então usamos .find()
+  const reservaAtiva = reservas?.find((r) => r.status === 1); // 1 = ATIVA
+
+  // Função helper para ordenar e fatiar
+  const sortAndSlice = (reservas: Reserva[]) => {
+    return (
+      reservas
+        // Ordena pela data de início, da mais nova para a mais antiga
+        .sort(
+          (a, b) =>
+            new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime()
+        )
+        // Pega apenas as 3 primeiras
+        .slice(0, 3)
+    );
+  };
+
+  // Para as outras, filtramos, ordenamos e fatiamos
+  const reservasPendentes = sortAndSlice(
+    reservas?.filter((r) => r.status === 0) || []
+  );
+  const reservasVencidas = sortAndSlice(
+    reservas?.filter((r) => r.status === 3) || []
+  );
+  const reservasCanceladas = sortAndSlice(
+    reservas?.filter((r) => r.status === 4) || []
+  );
+  const reservasReprovadas = sortAndSlice(
+    reservas?.filter((r) => r.status === 5) || []
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      {/* Conteúdo do Modal */}
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg relative">
         {/* Botão de Fechar (X) */}
         <button
@@ -87,7 +133,7 @@ const MinhasReservasModal = ({ onClose }: ModalProps) => {
 
         <h2 className="text-2xl font-semibold mb-4">Minhas Reservas</h2>
         <p className="mb-4 text-gray-600">
-          Consulte sua reserva ativa para apresentar no local.
+          Consulte sua reserva ativa e histórico.
         </p>
 
         {/* Formulário de Busca */}
@@ -124,65 +170,103 @@ const MinhasReservasModal = ({ onClose }: ModalProps) => {
           )}
 
           {/* Estado 2: Encontrou reservas, mas NENHUMA está "ATIVA" */}
-          {reservas &&
-            reservas.length > 0 &&
-            reservasAtivas.length === 0 &&
-            !error && (
-              <p className="text-gray-500 text-center">
-                Você não possui reservas ativas no momento.
-              </p>
-            )}
-
-          {/* Estado 3: Encontrou e vai exibir o(s) comprovante(s) */}
-          {reservasAtivas.length > 0 && (
+          {/* Estado 2: Busca concluída, ALGO foi encontrado */}
+          {reservas && reservas.length > 0 && !error && (
             <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
-              {reservasAtivas.map((reserva) => (
+              {/* --- SEÇÃO RESERVA ATIVA (COMPROVANTE) --- */}
+              {reservaAtiva ? (
                 <div
-                  key={reserva.id}
-                  className="border-2 border-dashed border-gray-400 rounded-lg p-4 bg-gray-50"
+                  key={reservaAtiva.id}
+                  className="border-2 border-dashed border-green-500 rounded-lg p-4 bg-green-50"
                 >
-                  {/* Cabeçalho do Comprovante */}
                   <div className="text-center mb-3">
-                    <h3 className="font-bold text-lg uppercase">
+                    <h3 className="font-bold text-lg uppercase text-green-800">
                       Comprovante de Reserva
                     </h3>
                     <p className="text-sm text-gray-600">
                       Prefeitura de Teodoro Sampaio - SP
                     </p>
                   </div>
-
-                  {/* Corpo do Comprovante */}
                   <div className="flex justify-between items-center">
                     <div className="space-y-2 text-sm">
                       <p>
                         <span className="font-semibold">Cliente:</span>{" "}
-                        {reserva.nome}
+                        {reservaAtiva.nome}
                       </p>
                       <p>
                         <span className="font-semibold">Quadra:</span>{" "}
-                        {reserva.Quadra.localizacao} {reserva.Quadra.tipo}
+                        {reservaAtiva.Quadra.localizacao} (
+                        {reservaAtiva.Quadra.tipo})
                       </p>
                       <p>
                         <span className="font-semibold">Data:</span>{" "}
-                        {formatarData(reserva.dataInicio)}{" "}
-                        {formatarData(reserva.dataFim)}
+                        {formatarDataHora(reservaAtiva.dataInicio)} -{" "}
+                        {formatarHora(reservaAtiva.dataFim)}
                       </p>
                       <p className="flex items-center">
                         <span className="font-semibold mr-2">Status:</span>
-                        <span className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-                          {STATUS_RESERVA_STRING[reserva.status] ||
-                            "DESCONHECIDO"}
+                        <span className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs font-bold inline-flex items-center gap-1">
+                          <Check size={12} />
+                          {STATUS_RESERVA_STRING[reservaAtiva.status]}
                         </span>
                       </p>
                     </div>
-
-                    {/* Ícone de "QR Code" */}
                     <div className="text-gray-700">
                       <QrCode size={72} />
                     </div>
                   </div>
                 </div>
-              ))}
+              ) : (
+                // Mensagem se não tiver NENHUMA ativa
+                <p className="text-gray-500 text-center text-sm pb-2 border-b border-gray-200">
+                  Você não possui nenhuma reserva ativa no momento.
+                </p>
+              )}
+
+              {/* --- SEÇÃO HISTÓRICO (OUTROS STATUS) --- */}
+              <div className="space-y-3">
+                {/* LISTA DE PENDENTES */}
+                {reservasPendentes.length > 0 && (
+                  <HistoricoItem
+                    titulo="Reservas Pendentes"
+                    reservas={reservasPendentes}
+                    formatarData={formatarDataResumo}
+                    Icon={AlertTriangle}
+                    cor="text-orange-600"
+                  />
+                )}
+                {/* LISTA DE VENCIDAS */}
+                {reservasVencidas.length > 0 && (
+                  <HistoricoItem
+                    titulo="Reservas Vencidas"
+                    reservas={reservasVencidas}
+                    formatarData={formatarDataResumo}
+                    Icon={Clock}
+                    cor="text-red-600"
+                  />
+                )}
+                {/* LISTA DE CANCELADAS */}
+                {reservasCanceladas.length > 0 && (
+                  <HistoricoItem
+                    titulo="Reservas Canceladas"
+                    reservas={reservasCanceladas}
+                    formatarData={formatarDataResumo}
+                    Icon={XCircle}
+                    cor="text-gray-500"
+                  />
+                )}
+
+                {/* ADICIONE ESTE BLOCO: */}
+                {reservasReprovadas.length > 0 && (
+                  <HistoricoItem
+                    titulo="Reservas Reprovadas"
+                    reservas={reservasReprovadas}
+                    formatarData={formatarDataResumo}
+                    Icon={XCircle} // <-- Pode usar XCircle ou AlertTriangle
+                    cor="text-red-700" // Ex: um vermelho mais escuro
+                  />
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -190,5 +274,38 @@ const MinhasReservasModal = ({ onClose }: ModalProps) => {
     </div>
   );
 };
+
+type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
+
+interface HistoricoItemProps {
+  titulo: string;
+  reservas: Reserva[];
+  formatarData: (dataISO: string) => string;
+  Icon: LucideIcon;
+  cor: string; // Tailwind color class
+}
+
+const HistoricoItem = ({
+  titulo,
+  reservas,
+  formatarData,
+  Icon,
+  cor,
+}: HistoricoItemProps) => (
+  <div>
+    <h4 className={`font-semibold ${cor} flex items-center gap-2 mb-1`}>
+      <Icon size={16} />
+      {titulo} ({reservas.length})
+    </h4>
+    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 pl-2">
+      {reservas.map((reserva) => (
+        <li key={reserva.id}>
+          <strong>{reserva.Quadra.localizacao}</strong> em{" "}
+          {formatarData(reserva.dataInicio)}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 export default MinhasReservasModal;
