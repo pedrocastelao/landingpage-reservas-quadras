@@ -1,4 +1,4 @@
-// Validar CPF (algoritmo básico)
+
 export const validateCPF = (cpf: string): boolean => {
   cpf = cpf.replace(/[^\d]+/g, "");
   if (cpf.length !== 11 || /^(.)\1*$/.test(cpf)) return false;
@@ -22,7 +22,7 @@ export const validateCPF = (cpf: string): boolean => {
   return true;
 };
 
-// Formatar CPF
+
 export const formatCPF = (value: string): string => {
   const cpf = value.replace(/\D/g, "");
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");

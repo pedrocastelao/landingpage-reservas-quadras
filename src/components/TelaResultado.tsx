@@ -2,13 +2,12 @@
 
 import { CheckCircle, AlertTriangle } from "lucide-react";
 
-// Definimos as propriedades que o componente receberá
 interface ResultadoProps {
   status: "success" | "error";
   titulo: string;
   mensagem: string;
   textoBotao: string;
-  onClose: () => void; // Ação ao clicar no botão
+  onClose: () => void; 
 }
 
 const TelaResultado = ({
@@ -18,7 +17,6 @@ const TelaResultado = ({
   textoBotao,
   onClose,
 }: ResultadoProps) => {
-  // Define o ícone e a cor com base no status
   const isSuccess = status === "success";
   const Icone = isSuccess ? CheckCircle : AlertTriangle;
   const corIcone = isSuccess ? "text-green-500" : "text-red-500";
