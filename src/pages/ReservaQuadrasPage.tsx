@@ -14,7 +14,7 @@ type SubmissionStatus = {
 };
 
 interface ConfigReserva {
-  diaNumero: string;
+  // diaNumero: string;
   diaNome: string;
 }
 
@@ -47,7 +47,7 @@ const ReservaQuadrasPage = () => {
         }
 
         setConfiguracaoReserva({
-          diaNumero: configDoDia.valor,
+          // diaNumero: configDoDia.valor,
           diaNome: configDoDia.regra,
         });
 
@@ -79,8 +79,8 @@ const ReservaQuadrasPage = () => {
     );
   }
 
-  const { diaNumero, diaNome } = configuracaoReserva;
-  const hoje: number = new Date().getDay();
+  const { diaNome } = configuracaoReserva;
+  // const hoje: number = new Date().getDay();
   const isReservasAbertas: boolean = true;
 
   
