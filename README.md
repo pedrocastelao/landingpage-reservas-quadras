@@ -42,7 +42,7 @@ npm install
 
 Crie um arquivo `.env.development` na raiz do projeto (ou edite o existente) e adicione a URL da API:
 ```env
-URL_API=https://backend-g18t.onrender.com
+VITE_API=https://backend-g18t.onrender.com
 ```
 4. **Inicie o servidor de desenvolvimento**
 ```bash
