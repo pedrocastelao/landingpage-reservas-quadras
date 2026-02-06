@@ -51,4 +51,8 @@ npm run dev
 5. **Acesse a aplicação**
 Abra o navegador e acesse: `http://localhost:5173`
 
+**SISTEMA NO AR - CASO TENHAM CURIOSIDADE**
+https://landingpage-reservas-quadras.vercel.app/
+
+
 
