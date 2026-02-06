@@ -55,4 +55,48 @@ LOG: Abra o navegador e acesse
 https://landingpage-reservas-quadras.vercel.app/
 
 
+## 🎯 Exemplos Práticos de Uso
+
+### 1️⃣ Fazendo uma Reserva
+
+Siga os passos abaixo para testar o sistema:
+
+1. **Acesse a aplicação** no navegador
+2. **Preencha o formulário de reserva** com os seguintes dados:
+   ```
+   Nome Completo: João da Silva
+   CPF: 123.456.789-09 (use um CPF válido)
+   ```
+3. **Selecione a quadra desejada**
+4. **Escolha a data** (limitado à semana atual)
+5. **Selecione o horário disponível** na lista
+6. **Clique em "Reservar"**
+7. **Aguarde a confirmação** ✅
+
+### 2️⃣ Consultando sua Reserva
+
+Após fazer a reserva, você pode consultá-la:
+
+1. **Digite seu CPF** no campo de consulta
+2. **Clique em "Consultar Reservas"**
+3. **Visualize todas as suas reservas** com os seguintes detalhes:
+   - Nome do solicitante
+   - Quadra reservada
+   - Data e horário
+   - Status da reserva
+
+### 📌 Status das Reservas
+
+Sua reserva pode ter os seguintes status:
+
+| Status | Descrição |
+|--------|-----------|
+| ⏳ **Pendente** | Reserva criada, aguardando aprovação |
+| ✅ **Aprovada** | Reserva aprovada pelo administrador |
+| ❌ **Cancelada** | Reserva cancelada |
+| 🏁 **Concluída** | Reserva já utilizada |
+
+> ⚠️ **IMPORTANTE**: Todas as reservas são criadas com status **Pendente**. Para que sua reserva seja **ativada/confirmada**, ela precisa ser **aceita por um administrador no Painel Administrativo**. 
+
+
 
