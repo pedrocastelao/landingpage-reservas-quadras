@@ -49,7 +49,7 @@ VITE_API=https://backend-g18t.onrender.com
 npm run dev
 ```
 5. **Acesse a aplicação**
-Abra o navegador e acesse: `http://localhost:5173`
+LOG: Abra o navegador e acesse
 
 **SISTEMA NO AR - CASO TENHAM CURIOSIDADE**
 https://landingpage-reservas-quadras.vercel.app/
